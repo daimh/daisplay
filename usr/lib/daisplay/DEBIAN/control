@@ -1,0 +1,10 @@
+Package: daisplay
+Version: 20191123
+Section: unknown
+Priority: optional
+Architecture: any
+Maintainer: Manhong Dai <daimh@umich.edu>
+Depends: xdaliclock, imagemagick, omxplayer, xorg, lxde, wget
+Recommends: mencoder
+Homepage: https://github.com/daimh/daisplay
+Description: A Raspbian Lite-based signage 

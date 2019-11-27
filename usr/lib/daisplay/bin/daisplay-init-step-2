@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+set -e
+if [ ! -f /etc/daisplay.conf ]
+then
+	echo /etc/daisplay.conf is missing
+	exit 1
+fi
+read -p "This command should be run right after you ran /usr/lib/daisplay/bin/daisplay-init-step-1.
+
+A lot of system setting on this Pi will be changed, do you want to continue (Y/n)?
+"
+[ "$REPLY" != "Y" -a "$REPLY" != "y" -a "$REPLY" != "" ] && exit 
+if [ "$USER" != "root" ]
+then
+	echo "ERR-001: this command needs be run with sudo"
+	exit 1
+fi
+. /etc/daisplay.conf
+cp -pr $DAISPLAY_HOME/usr/lib/daisplay/config/* /home/$SUDO_USER/.config/
+sed -ie "s/DAISPLAY_HOME/$(echo $DAISPLAY_HOME | sed -e "s/\//\\\\\//g")/" /home/$SUDO_USER/.config/pcmanfm/LXDE/desktop-items-0.conf
+echo "Please run 'sudo shutdown -r now' to reboot again"

@@ -1,0 +1,85 @@
+#!/usr/bin/env bash
+if [ ! -f /etc/daisplay.conf ]
+then
+	echo /etc/daisplay.conf is missing
+	exit 1
+fi
+. /etc/daisplay.conf
+export DAISPLAY_HOME OPENWEATHERMAP_APPKEY
+DAISPLAY_VAR="$DAISPLAY_HOME"/var/lib/daisplay
+cd $DAISPLAY_VAR
+
+function background {
+	while :
+	do
+		for IMG in "$DAISPLAY_VAR"/background/*
+		do
+			pcmanfm -w "$IMG" --display=:0.0
+			sleep $BACKGROUND_UPDATE_INTERVAL
+		done
+	done
+}
+
+function play_video {
+	mkdir -p "$DAISPLAY_VAR/run/$1"
+	PRVSZ=NULL
+	while :
+	do
+		sleep 5
+		[ ! -f "$DAISPLAY_VAR/run/$1/omxplayer.log" ] && continue
+		CURSZ=$(ls -l "$DAISPLAY_VAR/run/$1/omxplayer.log" |cut -d ' ' -f 5)
+		if [ "$PRVSZ" != "$CURSZ" ]
+		then
+			PRVSZ=$CURSZ
+			continue
+		fi
+		killall omxplayer.bin
+	done &
+
+	WIN=$(echo "$1" | cut -d - -f 2-5 | tr -s "-" " ")
+	while :
+	do
+		while read V
+		do
+			( cd "$DAISPLAY_VAR/run/$1" && omxplayer -g --font-size 50 --win "$WIN" "$V" < /dev/null )
+		done < <(find "$PWD/$1/" -name "*.mp4")
+	done
+}
+
+function play_addon {
+	mkdir -p "$DAISPLAY_VAR/run/$1"
+	read X1 Y1 X2 Y2 SLEEP < <(echo "$1" | cut -d - -f 2-6 | tr -s "-" " ")
+	[ $SLEEP = "" ] && SLEEP=10
+	((W=$X2-$X1))
+	((H=$Y2-$Y1))
+	(while [ ! -f "$DAISPLAY_VAR/run/$1/run.png" ]; do sleep 1; done; feh -x -R 1 -g ${W}x${H}+${X1}+${Y1} "$DAISPLAY_VAR/run/$1/run.png" ) &
+	while :
+	do
+		(cd "$DAISPLAY_VAR/run/$1" && $DAISPLAY_VAR/$1/addon $1 && mv addon.png run.png)
+		sleep $SLEEP
+	done
+}
+
+(
+	flock -n 200 || ! echo "daisplay is already running!" || exit 1
+	export DISPLAY=:0.0
+	killall omxplayer.bin omxplayer feh xdaliclock || echo -n
+	xdaliclock -transparent -nocycle -font "-*-*-*-*-*-*-20-*-*-*-*-*-*-*" -geometry 200x100+1700+0 &
+	
+	mkdir -p $XDG_RUNTIME_DIR/daisplay
+	ln -fs $XDG_RUNTIME_DIR/daisplay "$DAISPLAY_VAR/run"
+	
+	background &
+
+	for VIDEO in video-*
+	do
+		play_video $VIDEO &
+	done
+
+	for ADDON in addon-*
+	do
+		play_addon $ADDON &
+	done
+
+	wait
+) 200> lock

@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+set -e
+read -p "This command should be run right after you installed Raspbian Lite and daisplay package.
+
+A lot of system setting on this Pi will be changed, do you want to continue (Y/n)?
+"
+[ "$REPLY" != "Y" -a "$REPLY" != "y" -a "$REPLY" != "" ] && exit 
+if [ "$USER" != "root" ]
+then
+	echo "ERR-001: this command needs be run with sudo"
+	exit 1
+fi
+apt update
+#apt install xdaliclock imagemagick omxplayer xorg lxde mencoder python3-pil feh
+apt install xdaliclock omxplayer xorg lxde mencoder python3-pil feh
+sed -ie "s/^#disable_overscan=1/disable_overscan=1/" /boot/config.txt
+if ! grep -q ^autologin-user /etc/lightdm/lightdm.conf 
+then
+	cat << EOF >> /etc/lightdm/lightdm.conf
+
+[SeatDefaults]
+autologin-user=$SUDO_USER
+autologin-user-timeout=0
+pam-service=lightdm-autologin
+xserver-command=X -s 0 dpms -nocursor
+EOF
+fi
+echo "Please run 'sudo shutdown -r now' to reboot"

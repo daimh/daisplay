@@ -1,0 +1,27 @@
+[Desktop Entry]
+Name=daisplay
+Name[bg]=daisplay
+Name[ca]=daisplay
+Name[cs]=daisplay
+Name[de]=daisplay
+Name[es_ES]=daisplay
+Name[fi]=daisplay
+Name[fr_FR]=daisplay
+Name[gl_ES]=daisplay
+Name[he]=daisplay
+Name[hr]=daisplay
+Name[hu]=daisplay
+Name[is]=daisplay
+Name[ja]=daisplay
+Name[pl]=daisplay
+Name[pt_BR]=daisplay
+Name[pt_PT]=daisplay
+Name[ro]=daisplay
+Name[ru]=daisplay
+Name[zh_CN]=daisplay
+Icon=clipit-trayicon
+Exec=bash -c "source /etc/daisplay.conf && \$DAISPLAY_HOME/usr/bin/daisplay"
+Terminal=false
+Type=Application
+OnlyShowIn=LXDE;
+X-GNOME-Autostart-enabled=true

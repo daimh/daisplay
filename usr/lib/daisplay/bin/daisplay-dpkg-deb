@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+set -e
+if [ ! -f /etc/daisplay.conf ]
+then
+	echo /etc/daisplay.conf is missing
+	exit 1
+fi
+if [ -d daisplay_custom ]
+then
+	echo temporary folder daisplay_custom already exists
+	exit 1
+fi
+. /etc/daisplay.conf
+read -p "This command will create an temporary directory 'daisplay_custom' under current directory,
+
+do you want to continue (Y/n)?
+"
+[ "$REPLY" != "Y" -a "$REPLY" != "y" -a "$REPLY" != "" ] && exit 
+mkdir daisplay_custom
+cp -pr "$DAISPLAY_HOME"/* daisplay_custom
+sed -ie "s/^DAISPLAY_HOME/#DAISPLAY_HOME/" daisplay_custom/etc/daisplay.conf
+rm daisplay_custom/etc/daisplay.confe
+mv daisplay_custom/usr/lib/daisplay/DEBIAN daisplay_custom/
+dpkg-deb --build daisplay_custom
