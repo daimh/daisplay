@@ -1,7 +1,7 @@
 ## daisplay
 
 #### Overview
-A Raspbian Lite-based signage
+A Raspbian Lite-based signage, a demo is at <https://www.youtube.com/watch?v=7xs4GRC0qHc>
 
 It plays multiple h264 videos simutaneously, shows time, weather and bus information, changes background at user-specified interval. It also supports user's own addon. U of Michigan's Magic Bus, AAATA bus, and weather were implemented in addon as an example. 
 
