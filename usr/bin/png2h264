@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+#20191202 mp4 -> h264
+#20191121
+set -e
+if [ -f slideshow.h264 ]
+then
+	echo "file slideshow.h264 already exists, rename or remove it first!"
+	exit 1
+fi
+LAST="$(ls *.png | tail -n 1)"
+if [[ -h "$LAST" && $LAST == *-png2h264.png ]]
+then
+	echo "$LAST seems to be a leftover file from last png2h264 run, rm it please"
+	exit 1
+fi 
+DUP="$(echo $LAST | sed -e "s/\.png/-png2h264.png/")"
+ln -s "$LAST" "$DUP"
+mencoder mf://*.png -mf w=1080:h=1080:fps=0.3:type=png -ovc x264 -x264encopts preset=veryslow -o slideshow.h264
+rm "$DUP"

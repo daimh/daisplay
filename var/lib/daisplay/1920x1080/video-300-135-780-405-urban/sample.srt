@@ -1,0 +1,12 @@
+1
+00:00:00,500 --> 00:00:03,000
+https://github.com/daimh/daisplay
+
+2
+00:00:03,500 --> 00:00:06,000
+window size is specified in the sub-directory name
+video-X1-Y1-X2-Y2-description
+
+3
+00:00:06,500 --> 00:30:00,000
+subtitle can be added with command mencoder

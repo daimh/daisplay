@@ -5,14 +5,17 @@ then
 	exit 1
 fi
 . /etc/daisplay.conf
-export DAISPLAY_HOME OPENWEATHERMAP_APPKEY
-DAISPLAY_VAR="$DAISPLAY_HOME"/var/lib/daisplay
-cd $DAISPLAY_VAR
+
+export DISPLAY=:0.0
+RESOLUTION=$(xwininfo -root |grep geometry | sed -e "s/.* //; s/+.*//")
+DAISPLAY_VAR="$DAISPLAY_HOME"/var/lib/daisplay/$RESOLUTION
+export OPENWEATHERMAP_APPKEY DAISPLAY_VAR
+cd $DAISPLAY_VAR || echo "Directory $DAISPLAY_VAR doesn't exist"
 
 function background {
 	while :
 	do
-		for IMG in "$DAISPLAY_VAR"/background/*
+		for IMG in "$DAISPLAY_VAR"/background/*.png
 		do
 			pcmanfm -w "$IMG" --display=:0.0
 			sleep $BACKGROUND_UPDATE_INTERVAL
@@ -41,8 +44,8 @@ function play_video {
 	do
 		while read V
 		do
-			( cd "$DAISPLAY_VAR/run/$1" && omxplayer -g --font-size 50 --win "$WIN" "$V" < /dev/null )
-		done < <(find "$PWD/$1/" -name "*.mp4")
+			( cd "$DAISPLAY_VAR/run/$1" && omxplayer --no-osd -g --font-size 50 --win "$WIN" "$V" < /dev/null )
+		done < <(find "$PWD/$1/" -name "*.h264")
 	done
 }
 
@@ -62,9 +65,9 @@ function play_addon {
 
 (
 	flock -n 200 || ! echo "daisplay is already running!" || exit 1
-	export DISPLAY=:0.0
 	killall omxplayer.bin omxplayer feh xdaliclock || echo -n
-	xdaliclock -transparent -nocycle -font "-*-*-*-*-*-*-20-*-*-*-*-*-*-*" -geometry 200x100+1700+0 &
+	((CLOCK_X= $(echo $RESOLUTION| cut -d x -f 1)-220))
+	xdaliclock -transparent -nocycle -font "-*-*-*-*-*-*-20-*-*-*-*-*-*-*" -geometry 200x100+$CLOCK_X+0 &
 	
 	mkdir -p $XDG_RUNTIME_DIR/daisplay
 	ln -fs $XDG_RUNTIME_DIR/daisplay "$DAISPLAY_VAR/run"
@@ -74,8 +77,10 @@ function play_addon {
 	for VIDEO in video-*
 	do
 		play_video $VIDEO &
+		sleep 1
 	done
 
+	while ! ping -q -c 1 8.8.8.8; do sleep 1; done
 	for ADDON in addon-*
 	do
 		play_addon $ADDON &
