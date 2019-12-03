@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 #19500101 initial version daimon:/etc/Model/sh
-import sys
-import json, urllib.request, os
+import sys, os
 from PIL import Image, ImageDraw, ImageFont
 import magicbus, theride
 

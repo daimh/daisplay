@@ -25,19 +25,22 @@ function background {
 
 function play_video {
 	mkdir -p "$DAISPLAY_VAR/run/$1"
-	PRVSZ=NULL
-	while :
-	do
-		sleep 5
-		[ ! -f "$DAISPLAY_VAR/run/$1/omxplayer.log" ] && continue
-		CURSZ=$(ls -l "$DAISPLAY_VAR/run/$1/omxplayer.log" |cut -d ' ' -f 5)
-		if [ "$PRVSZ" != "$CURSZ" ]
-		then
-			PRVSZ=$CURSZ
-			continue
-		fi
-		killall omxplayer.bin
-	done &
+	if [ "$2" != "once" ]
+	then
+		PRVSZ=NULL
+		while :
+		do
+			sleep 5
+			[ ! -f "$DAISPLAY_VAR/run/$1/omxplayer.log" ] && continue
+			CURSZ=$(ls -l "$DAISPLAY_VAR/run/$1/omxplayer.log" |cut -d ' ' -f 5)
+			if [ "$PRVSZ" != "$CURSZ" ]
+			then
+				PRVSZ=$CURSZ
+				continue
+			fi
+			killall omxplayer.bin
+		done &
+	fi
 
 	WIN=$(echo "$1" | cut -d - -f 2-5 | tr -s "-" " ")
 	while :
@@ -46,6 +49,7 @@ function play_video {
 		do
 			( cd "$DAISPLAY_VAR/run/$1" && omxplayer --no-osd -g --font-size 50 --win "$WIN" "$V" < /dev/null )
 		done < <(find "$PWD/$1/" -name "*.h264")
+		[ "$2" = "once" ] && break
 	done
 }
 
@@ -74,16 +78,36 @@ function play_addon {
 	
 	background &
 
-	for VIDEO in video-*
-	do
-		play_video $VIDEO &
-		sleep 1
-	done
+	if [ -f loop ]
+	then
+		while :
+		do
+			while read SET
+			do
+				(
+					for VIDEO in $SET
+					do
+						play_video $VIDEO once &
+						sleep 1
+					done
+					wait
+				)
+			done < loop
+			sleep 1
+		done &
+	else
+		for VIDEO in video-*
+		do
+			play_video $VIDEO &
+			sleep 1
+		done
+	fi
 
 	while ! ping -q -c 1 8.8.8.8; do sleep 1; done
 	for ADDON in addon-*
 	do
 		play_addon $ADDON &
+		sleep 1
 	done
 
 	wait
