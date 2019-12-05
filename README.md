@@ -1,7 +1,7 @@
 ## daisplay
 
 #### Overview
-A Raspbian Lite-based signage, a demo is at <https://www.youtube.com/watch?v=7xs4GRC0qHc>
+A Raspbian Lite-based signage, two demos are at <https://youtu.be/7xs4GRC0qHc> <https://youtu.be/MaKyHXSJHWM>
 
 It plays multiple h264 videos simutaneously, shows time, weather and bus information, changes background at user-specified interval. It also supports user's own addon. U of Michigan's Magic Bus, AAATA bus, and weather were implemented in addon as an example. 
 
@@ -53,4 +53,4 @@ prepare a Raspbian Lite image on a SD card, boot it, login as user 'pi', and adj
 	$ sudo shutdown -r now
 
 #### Acknowledgement
- Copyright free pictures and videos are downloaded from <https://pixabay.com/photos/plouzane-lighthouse-france-landmark-1758197/> and <https://coverr.co>
+ Copyright free pictures and videos were downloaded from <https://pixabay.com/photos/plouzane-lighthouse-france-landmark-1758197/> and <https://coverr.co>
