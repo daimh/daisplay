@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+#20200102 FIRST LAST
 #20191202 mp4 -> h264
 #20191121
 set -e
@@ -8,12 +9,23 @@ then
 	exit 1
 fi
 LAST="$(ls *.png | tail -n 1)"
-if [[ -h "$LAST" && $LAST == *-png2h264.png ]]
+if [[ -h "$LAST" && $LAST == *-png2h264-LAST.png ]]
 then
-	echo "$LAST seems to be a leftover file from last png2h264 run, rm it please"
+	echo "$LAST seems to be a leftover file from previous png2h264 run, rm it please"
 	exit 1
 fi 
-DUP="$(echo $LAST | sed -e "s/\.png/-png2h264.png/")"
-ln -s "$LAST" "$DUP"
-mencoder mf://*.png -mf w=1080:h=1080:fps=0.3:type=png -ovc x264 -x264encopts preset=veryslow -o slideshow.h264
-rm "$DUP"
+LASTDUP="$(echo $LAST | sed -e "s/\.png/-png2h264-LAST.png/")"
+ln -s "$LAST" "$LASTDUP"
+
+
+FIRST="$(ls *.png | head -n 1)"
+if [[ -h "$FIRSTT" && $FIRSTT == *-png2h264-FIRST.png ]]
+then
+	echo "$FIRST seems to be a leftover file from previous png2h264 run, rm it please"
+	exit 1
+fi 
+FIRSTDUP="$(echo $FIRST | sed -e "s/\.png/-png2h264-FIRST.png/")"
+ln -s "$FIRST" "$FIRSTDUP"
+
+mencoder mf://*.png -mf w=1080:h=1080:fps=0.3:type=png -ovc x264 -x264encopts preset=medium -o slideshow.h264
+rm "$FIRSTDUP" "$LASTDUP" 
