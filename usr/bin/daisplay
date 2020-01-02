@@ -48,7 +48,7 @@ function play_video {
 		while read V
 		do
 			( cd "$DAISPLAY_VAR/run/$1" && omxplayer --no-osd -g --font-size 50 --win "$WIN" "$V" < /dev/null )
-		done < <(find "$PWD/$1/" -name "*.h264")
+		done < <(find "$PWD/$1/" -name "*.h264" | sort)
 		[ "$2" = "once" ] && break
 	done
 }
