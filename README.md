@@ -1,11 +1,16 @@
 ## daisplay
 
 #### Overview
-A Raspbian Lite-based signage, two demos are at <https://youtu.be/7xs4GRC0qHc> <https://youtu.be/MaKyHXSJHWM>
+An Raspberry Pi OS Lite-based signage. 
+
 
 It plays multiple h264 videos simutaneously, shows time, weather and bus information, changes background at user-specified interval. It also supports user's own addon. U of Michigan's Magic Bus, AAATA bus, and weather were implemented in addon as an example. 
 
 Tested on Raspberry Pi 3 Model B at 1080p resolution, and Pi 4 with one 4k resolution display.
+
+#### Demo 
+- [1](https://youtu.be/7xs4GRC0qHc) 
+- [2](https://youtu.be/MaKyHXSJHWM)
 
 #### Installation
 * prepare
@@ -52,5 +57,25 @@ prepare a Raspbian Lite image on a SD card, boot it, login as user 'pi', and adj
 	$ sudo /usr/lib/daisplay/bin/daisplay-init-step-2
 	$ sudo shutdown -r now
 
-#### Acknowledgement
- Copyright free pictures and videos were downloaded from <https://pixabay.com/photos/plouzane-lighthouse-france-landmark-1758197/> and <https://coverr.co>
+
+#### Copyright
+
+Developed by [Manhong Dai](mailto:daimh@umich.edu)
+
+Copyright © 2020 University of Michigan. License [GPLv3+](https://gnu.org/licenses/gpl.html): GNU GPL version 3 or later 
+
+This is free software: you are free to change and redistribute it.
+
+There is NO WARRANTY, to the extent permitted by law.
+
+#### Acknowledgment
+
+Ruth Freedman, MPH, former administrator of MNI, UMICH
+
+Fan Meng, Ph.D., Research Associate Professor, Psychiatry, UMICH
+
+Huda Akil, Ph.D., Director of MNI, UMICH
+
+Stanley J. Watson, M.D., Ph.D., Director of MNI, UMICH
+
+Copyright free pictures and videos were downloaded from <https://pixabay.com/photos/plouzane-lighthouse-france-landmark-1758197/> and <https://coverr.co>

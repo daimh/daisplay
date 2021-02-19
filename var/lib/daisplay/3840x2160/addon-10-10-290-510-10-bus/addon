@@ -4,10 +4,17 @@ import sys, os
 from PIL import Image, ImageDraw, ImageFont
 import magicbus, theride
 
-magicbus_stops = [ 'Couzens/BSRB', 'Couzens/Zina Pitcher', 'BSRB']
-theride_stops = ['1216', '1831']
-stops_theride_rename = {'1216' : 'Couzens/BSRB', '1831' : 'BSRB' }
-routes_theride_rename = {
+magicbus_stops = {
+	'M305' : 'Couzens/BSRB',
+	'M307' : 'BSRB',
+}
+
+theride_stops = {
+	'1216' : 'Couzens/BSRB',
+	'1831' : 'BSRB',
+}
+
+route_rename = {
 	'4-TO BTC'			: '4-Y2A',
 	'4-TO YTC'			: '4-A2Y',
 	'32-TO MILLER P+R'	: '32',
@@ -42,25 +49,20 @@ def draw_png(stop_route_time, crop_spec):
 			draw.text((100, y), time, font=fnt, fill=ross)
 			y += row
 	img.save('addon.png', 'PNG')
-def merge_srt(srt1, srt2, stops_rename, routes_rename):
-	for stop, route_time in srt2.items():
-		stop_new = stops_rename.get(stop, stop)
+def merge_srt(srt1, srt2, route_rename):
+	for stop_name, route_time in srt2.items():
 		for route, time_list in route_time.items():
-			route_new = routes_rename.get(route, route)
-			new_time_list = srt1.setdefault(stop_new, {}).setdefault(route_new, []) 
+			route_new = route_rename.get(route, route)
+			new_time_list = srt1.setdefault(stop_name, {}).setdefault(route_new, []) 
 			new_time_list += time_list
 	return srt1
 
 def main():
-	try:
-		stop_route_time = magicbus.get_stop_route_time(magicbus_stops)
-	except:
-		stop_route_time = {}
-	try :
-		theride_srt = theride.get_stop_route_time(theride_stops)
-		stop_route_time = merge_srt(stop_route_time, theride_srt, stops_theride_rename, routes_theride_rename)
-	except:
-		pass
+	magicbus_srt = magicbus.get_stop_route_time(magicbus_stops)
+	theride_srt = theride.get_stop_route_time(theride_stops)
+#	print(magicbus_srt)
+#	print(theride_srt)
+	stop_route_time = merge_srt(magicbus_srt, theride_srt, route_rename)
 	#list to string
 	for st, route_time in stop_route_time.items():
 		for rt in route_time.keys():

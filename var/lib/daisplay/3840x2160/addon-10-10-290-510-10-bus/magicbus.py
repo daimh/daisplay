@@ -2,33 +2,22 @@
 #19500101 initial version daimon:/etc/Model/sh
 import sys
 import argparse
-import json, urllib.request
+import json, urllib.request, time
+import magicbus_key
 
-def get_my_stops(my_stop_names):
-	stops = json.loads(urllib.request.urlopen('https://mbus.doublemap.com/map/v2/stops', timeout=4).read().decode())
-	my_stops = []
-	for stop in stops:
-		if stop['name'] not in my_stop_names: continue
-		my_stops.append(stop)
-	if len(my_stops) != len(my_stop_names): raise Exception('ERR-001')
-	return my_stops
-def get_routes():
-	my_routes = {}
-	for route in json.loads(urllib.request.urlopen('https://mbus.doublemap.com/map/v2/routes', timeout=4).read().decode()):
-		my_routes[route['id']] = route
-	return my_routes
-def get_stop_route_time(my_stop_names):
-	my_stops = get_my_stops(my_stop_names)
-	my_routes = get_routes()
+def get_stop_route_time(my_stops):
 	stop_route_time = {}
-	for stop in my_stops:
-		etas = json.loads(urllib.request.urlopen(f'https://mbus.doublemap.com/map/v2/eta?stop={stop["id"]}', timeout=4).read().decode())
-		for eta in etas['etas'].values():
-			for bus in eta['etas']:
-				stop_route_time.setdefault(stop['name'], {}).setdefault(my_routes[bus['route']]['short_name'], []).append(bus['avg'])
+	for stop_id, stop_name in my_stops.items():
+		now = int(time.time())
+		link = f'https://mbus.ltp.umich.edu/bustime/api/v3/getpredictions?locale=en&stpid={stop_id}&top=4&key={magicbus_key.key}&format=json&xtime={now}'
+		prds = json.loads(urllib.request.urlopen(link, timeout=4).read().decode())
+		for bus in prds['bustime-response']['prd']:
+			waittime = bus['prdctdn']
+			if waittime == 'DUE': continue
+			stop_route_time.setdefault(stop_name, {}).setdefault(bus['rt'], []).append(int(waittime))
 	return stop_route_time
 def main():
-	stop_route_time = get_stop_route_time([ 'Couzens/BSRB', 'Couzens/Zina Pitcher', 'BSRB'])
+	stop_route_time = get_stop_route_time(['M305', 'M307'])
 	for st in sorted(stop_route_time.keys()):
 		print(st)
 		for route_time in sorted(stop_route_time.get(st, {}).items()):
