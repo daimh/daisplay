@@ -5,6 +5,12 @@ import argparse
 import json, urllib.request, time
 import magicbus_key
 
+stops = {
+	'M305' : 'Couzens/BSRB',
+	'M307' : 'BSRB',
+	'M309' : 'Glen/Catherine OB',
+	'M310' : 'Glen/Catherine IB',
+}
 def get_stop_route_time(my_stops):
 	stop_route_time = {}
 	for stop_id, stop_name in my_stops.items():
@@ -17,7 +23,7 @@ def get_stop_route_time(my_stops):
 			stop_route_time.setdefault(stop_name, {}).setdefault(bus['rt'], []).append(int(waittime))
 	return stop_route_time
 def main():
-	stop_route_time = get_stop_route_time(['M305', 'M307'])
+	stop_route_time = get_stop_route_time(stops)
 	for st in sorted(stop_route_time.keys()):
 		print(st)
 		for route_time in sorted(stop_route_time.get(st, {}).items()):

@@ -1,12 +1,13 @@
 ## daisplay
 
 #### Overview
-An Raspberry Pi OS Lite-based signage. 
-
+A Raspberry Pi OS Lite-based signage. 
 
 It plays multiple h264 videos simutaneously, shows time, weather and bus information, changes background at user-specified interval. It also supports user's own addon. U of Michigan's Magic Bus, AAATA bus, and weather were implemented in addon as an example. 
 
-Tested on Raspberry Pi 3 Model B at 1080p resolution, and Pi 4 with one 4k resolution display.
+#### Test history
+- 2019-09-25, Raspberry Pi 3 Model B at 1080p resolution, and Pi 4 with one 4k resolution display 
+- 2021-02-23, Raspberry Pi OS kernel version 5.10.11-v7l+ on a Pi 4 with one 4k resolution display 
 
 #### Demo 
 - [1](https://youtu.be/7xs4GRC0qHc) 
@@ -15,7 +16,7 @@ Tested on Raspberry Pi 3 Model B at 1080p resolution, and Pi 4 with one 4k resol
 #### Installation
 * prepare
 
-prepare a Raspbian Lite image on a SD card, boot it, login as user 'pi', and adjust timezone.
+prepare a Raspberry Pi OS Lite image on a SD card, boot it, login as user 'pi', and adjust timezone.
 
 * step 1
 
@@ -50,7 +51,7 @@ prepare a Raspbian Lite image on a SD card, boot it, login as user 'pi', and adj
 
 #### Package and install your own customzation
 	$ /home/pi/daisplay/usr/lib/daisplay/bin/daisplay-dpkg-deb
-	# copy the deb file to a new Raspbian Lite, log in to the new Pi
+	# copy the deb file to a new Raspberry Pi OS Lite, log in to the new Pi
 	$ sudo apt install ./daisplay_custom.deb
 	$ sudo /usr/lib/daisplay/bin/daisplay-init-step-1
 	$ sudo shutdown -r now
@@ -62,7 +63,7 @@ prepare a Raspbian Lite image on a SD card, boot it, login as user 'pi', and adj
 
 Developed by [Manhong Dai](mailto:daimh@umich.edu)
 
-Copyright © 2020 University of Michigan. License [GPLv3+](https://gnu.org/licenses/gpl.html): GNU GPL version 3 or later 
+Copyright © 2021 University of Michigan. License [GPLv3+](https://gnu.org/licenses/gpl.html): GNU GPL version 3 or later 
 
 This is free software: you are free to change and redistribute it.
 

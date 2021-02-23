@@ -6,6 +6,11 @@ import json, urllib.request, time
 from datetime import datetime
 from PIL import Image, ImageDraw, ImageFont
 
+stops = {
+	'1153' : 'Glen/Catherine OB',
+	'1216' : 'Couzens/BSRB',
+	'1831' : 'BSRB',
+}
 def get_stop_route_time(my_stops):
 	stop_route_time = {}
 	now = datetime.now()
@@ -19,7 +24,7 @@ def get_stop_route_time(my_stops):
 			stop_route_time.setdefault(stop_name, {}).setdefault(prd['rt']+'-'+prd['rtdir'], []).append(diff)
 	return stop_route_time
 def main():
-	stop_route_time = get_stop_route_time({'1216' : 'Couzens/BSRB', '1831' : 'BSRB'})
+	stop_route_time = get_stop_route_time(stops)
 	for st in sorted(stop_route_time.keys()):
 		print(st)
 		for route_time in sorted(stop_route_time.get(st, {}).items()):
