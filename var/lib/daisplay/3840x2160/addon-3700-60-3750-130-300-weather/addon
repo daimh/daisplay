@@ -1,16 +1,15 @@
 #!/usr/bin/env python3
-#19500101 initial version daimon:/etc/Model/sh
+#20210204 key
 import sys
 import argparse
 import json, urllib.request, os
 from PIL import Image, ImageDraw, ImageFont
-
+import openweathermap_key
 def main():
-	key = os.environ.get('OPENWEATHERMAP_APPKEY')
-	if key is None or key == '':
-		degree, icon = '99', '01d'
+	if openweathermap_key.key == '':
+		degree, icon = '999', '01d'
 	else:
-		rtn = json.loads(urllib.request.urlopen(f'http://api.openweathermap.org/data/2.5/weather?id=4984247&APPID={key}').read().decode())
+		rtn = json.loads(urllib.request.urlopen(f'http://api.openweathermap.org/data/2.5/weather?id=4984247&APPID={openweathermap_key.key}').read().decode())
 		degree, icon = round(1.8 * (rtn['main']['temp'] - 233.15) - 40), rtn['weather'][0]['icon']
 	bg = Image.open(f"{os.environ['DAISPLAY_VAR']}/background/background.png")
 	crop_spec = tuple([int(s) for s in sys.argv[1].split('-')[1:5]])

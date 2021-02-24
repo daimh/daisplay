@@ -9,7 +9,7 @@ fi
 export DISPLAY=:0.0
 RESOLUTION=$(xwininfo -root |grep geometry | sed -e "s/.* //; s/+.*//")
 DAISPLAY_VAR="$DAISPLAY_HOME"/var/lib/daisplay/$RESOLUTION
-export OPENWEATHERMAP_APPKEY DAISPLAY_VAR
+export DAISPLAY_VAR
 cd $DAISPLAY_VAR || echo "Directory $DAISPLAY_VAR doesn't exist"
 
 function background {

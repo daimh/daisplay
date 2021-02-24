@@ -37,7 +37,8 @@ prepare a Raspberry Pi OS Lite image on a SD card, boot it, login as user 'pi', 
 ```
 
 #### Customization 
-* to show realtime weather, get a free appkey from <https://openweathermap.org/api> and put it in /etc/daisplay.conf
+* to show realtime weather, get a free appkey from <https://openweathermap.org/api> and put it in var/lib/daisplay/[RESOLUTION]/addon-*-weather/openweathermap\_key.py
+* to show bus information, get a free appkey from UofM mbus, and put it in var/lib/daisplay/[RESOLUTION]/addon-*-bus/magicbus\_key.py
 * copy multiple background png images to /home/pi/daisplay/var/lib/daisplay/background/. You can even dynamically generate png images in that directory.
 * copy h264 format videos files to var/lib/daisplay/video-X1-Y1-X2-Y2-DESCRIPTION/, only 1080p is supported as omxplayer has such a limitation even on Pi 4
 * to adjust the video window location, change X1, Y1, X2, Y2 in those video directory names

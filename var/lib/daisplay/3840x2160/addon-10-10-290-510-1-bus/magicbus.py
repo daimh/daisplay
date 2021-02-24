@@ -17,6 +17,7 @@ def get_stop_route_time(my_stops):
 		now = int(time.time())
 		link = f'https://mbus.ltp.umich.edu/bustime/api/v3/getpredictions?locale=en&stpid={stop_id}&top=4&key={magicbus_key.key}&format=json&xtime={now}'
 		prds = json.loads(urllib.request.urlopen(link, timeout=4).read().decode())
+		print(prds)
 		for bus in prds['bustime-response']['prd']:
 			waittime = bus['prdctdn']
 			if waittime == 'DUE': continue
