@@ -25,32 +25,37 @@ function background {
 
 function play_video {
 	mkdir -p "$DAISPLAY_VAR/run/$1"
-	if [ "$2" != "once" ]
-	then
-		PRVSZ=NULL
-		while :
-		do
-			sleep 5
-			[ ! -f "$DAISPLAY_VAR/run/$1/omxplayer.log" ] && continue
-			CURSZ=$(ls -l "$DAISPLAY_VAR/run/$1/omxplayer.log" |cut -d ' ' -f 5)
-			if [ "$PRVSZ" != "$CURSZ" ]
-			then
-				PRVSZ=$CURSZ
-				continue
-			fi
-			killall omxplayer.bin
-		done &
-	fi
-
-	WIN=$(echo "$1" | cut -d - -f 2-5 | tr -s "-" " ")
+	cd "$DAISPLAY_VAR/run/$1/"
+	rm omxplayer.log
+	echo -n > omxplayer.pid
+	
+	PRVSZ=NULL
 	while :
 	do
-		while read V
-		do
-			( cd "$DAISPLAY_VAR/run/$1" && omxplayer --no-osd -g --font-size 50 --win "$WIN" "$V" < /dev/null )
-		done < <(find "$PWD/$1/" -name "*.h264" | sort)
-		[ "$2" = "once" ] && break
-	done
+		[ ! -f omxplayer.pid ] && break
+		sleep 1
+		[ ! -f omxplayer.log ] && continue
+		CURSZ=$(stat -c %s omxplayer.log)
+		if [ "$PRVSZ" != "$CURSZ" ]
+		then
+			PRVSZ=$CURSZ
+			continue
+		fi
+		echo "MSG-001: killing frozen omxplayer pid $(cat omxplayer.pid) playing $1"
+		pgrep -a omxplayer
+		[ -s omxplayer.pid ] && kill -- -$(cat omxplayer.pid)
+	done &
+
+	WIN=$(echo "$1" | cut -d - -f 2-5 | tr -s "-" " ")
+	while read V
+	do
+		( 
+			setsid -w omxplayer --no-osd -g --font-size 50 --win "$WIN" "$V" < /dev/null & echo $! > omxplayer.pid
+			wait
+		)
+	done < <(find "$DAISPLAY_VAR/$1/" -name "*.h264" | sort)
+	rm omxplayer.pid
+	wait
 }
 
 function play_addon {
@@ -78,30 +83,21 @@ function play_addon {
 	
 	background &
 
-	if [ -f loop ]
-	then
-		while :
+	while :
+	do
+		while read SET
 		do
-			while read SET
-			do
-				(
-					for VIDEO in $SET
-					do
-						play_video $VIDEO once &
-						sleep 1
-					done
-					wait
-				)
-			done < loop
-			sleep 1
-		done &
-	else
-		for VIDEO in video-*
-		do
-			play_video $VIDEO &
-			sleep 1
-		done
-	fi
+			(
+				for VIDEO in $SET
+				do
+					play_video $VIDEO &
+					sleep 1
+				done
+				wait
+			)
+		done < <(grep -v "^#" loop)
+		sleep 1
+	done &
 
 	while ! ping -q -c 1 8.8.8.8; do sleep 1; done
 	for ADDON in addon-*

@@ -21,37 +21,45 @@ prepare a Raspberry Pi OS Lite image on a SD card, boot it, login as user 'pi', 
 * step 1
 
 ```
-	$ cd /home/pi
+	$ cd
 	$ sudo apt install git
 	$ git clone https://github.com/daimh/daisplay.git
-	$ sudo ln -s /home/pi/daisplay/etc/daisplay.conf /etc/
-	$ sudo /home/pi/daisplay/usr/lib/daisplay/bin/daisplay-init-step-1
+	$ sudo ln -s ~/daisplay/etc/daisplay.conf /etc/
+	$ sudo ~/daisplay/usr/lib/daisplay/bin/daisplay-init-step-1
 	$ sudo shutdown -r now
 ```
 
 * step 2
 
 ```
-	$ sudo /home/pi/daisplay/usr/lib/daisplay/bin/daisplay-init-step-2
+	$ sudo ~/daisplay/usr/lib/daisplay/bin/daisplay-init-step-2
 	$ sudo shutdown -r now
 ```
 
 #### Customization 
 * to show realtime weather, get a free appkey from <https://openweathermap.org/api> and put it in var/lib/daisplay/[RESOLUTION]/addon-*-weather/openweathermap\_key.py
 * to show bus information, get a free appkey from UofM mbus, and put it in var/lib/daisplay/[RESOLUTION]/addon-*-bus/magicbus\_key.py
-* copy multiple background png images to /home/pi/daisplay/var/lib/daisplay/background/. You can even dynamically generate png images in that directory.
-* copy h264 format videos files to var/lib/daisplay/video-X1-Y1-X2-Y2-DESCRIPTION/, only 1080p is supported as omxplayer has such a limitation even on Pi 4
+* copy multiple background png images to ~/daisplay/var/lib/daisplay/[RESOLUTION]/background/. You can even dynamically generate png images in that directory.
+* copy h264 format videos files to var/lib/daisplay/[RESOLUTION]/video-X1-Y1-X2-Y2-DESCRIPTION/, only 1080p is supported as omxplayer has such a limitation even on Pi 4
+* modify video playing order in var/lib/daisplay/[RESOLUTION]/loop
 * to adjust the video window location, change X1, Y1, X2, Y2 in those video directory names
 * command 'png2h264' can convert multiple png files to a h264 video for smooth slideshow
-* convert other video format to h264  
+* convert other video format to h264
 	`$ mencoder example.mpg -ovc x264 -x264encopts preset=medium -o example.h264`
-* embed subtitle file into a video  
+* embed subtitle file into a video
 	`$ mencoder example.mpg -ovc x264 -x264encopts preset=medium -sub Market.srt -subfont-text-scale 3 -o example.h264`
-* reduce video resolution, as Pi 3 is not powerful enough to play multiple 1080p videos.  
+* reduce video resolution, as Pi 3 is not powerful enough to play multiple 1080p videos.
 	`$ mencoder large.h264 -ovc x264 -x264encopts preset=medium -vf scale=960:540 -o small.h264`
+* to debug, check log ~/.cache/lxsession/LXDE/run.log, or ssh to it as user 'pi'
+```
+	$ while fuser -k ~/daisplay/var/lib/daisplay/3840x2160/lock; do sleep 1; done
+	$ . /etc/daisplay.conf 
+	$ export DISPLAY=:0.0
+	$ ~/daisplay/usr/bin/daisplay
+```
 
 #### Package and install your own customzation
-	$ /home/pi/daisplay/usr/lib/daisplay/bin/daisplay-dpkg-deb
+	$ ~/daisplay/usr/lib/daisplay/bin/daisplay-dpkg-deb
 	# copy the deb file to a new Raspberry Pi OS Lite, log in to the new Pi
 	$ sudo apt install ./daisplay_custom.deb
 	$ sudo /usr/lib/daisplay/bin/daisplay-init-step-1
