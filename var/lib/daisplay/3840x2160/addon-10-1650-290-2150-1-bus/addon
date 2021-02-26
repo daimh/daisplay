@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
 #19500101 initial version daimon:/etc/Model/sh
 import sys, os, time, json
 from PIL import Image, ImageDraw, ImageFont
@@ -36,15 +36,16 @@ def draw_png(stop_route_time, crop_spec, elapsed_time):
 		elapsed_str = 'Updated: just now'
 	else:
 		elapsed_str = f'Updated: {round(elapsed_time)}s ago'
-	draw.text((0, 0), elapsed_str, font=fnt, fill=maze)
-	y = row + 10
-	for st, route_time in sorted(stop_route_time.items()):
-		draw.text((0, y), st, font=fnt, fill=maze)
-		y += row
-		for rt, time in sorted(route_time.items()):
+	y = crop_spec[3] - crop_spec[1] - row
+	draw.text((0, y), elapsed_str, font=fnt, fill=maze)
+	y = y - row - 5
+	for st, route_time in sorted(stop_route_time.items(), reverse=True):
+		for rt, time in sorted(route_time.items(), reverse=True):
 			draw.text((20, y), rt, font=fnt, fill=ross)
 			draw.text((100, y), time, font=fnt, fill=ross)
-			y += row
+			y -= row
+		draw.text((0, y), st, font=fnt, fill=maze)
+		y -= row
 	img.save('addon.png', 'PNG')
 def merge_srt(srt1, srt2, route_rename):
 	for stop_name, route_time in srt2.items():

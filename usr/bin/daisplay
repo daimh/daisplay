@@ -79,7 +79,7 @@ function play_addon {
 	xdaliclock -transparent -nocycle -font "-*-*-*-*-*-*-20-*-*-*-*-*-*-*" -geometry 200x100+$CLOCK_X+0 &
 	
 	mkdir -p $XDG_RUNTIME_DIR/daisplay
-	ln -fs $XDG_RUNTIME_DIR/daisplay "$DAISPLAY_VAR/run"
+	[ -L "$DAISPLAY_VAR/run" ] || ln -s $XDG_RUNTIME_DIR/daisplay "$DAISPLAY_VAR/run"
 	
 	background &
 
