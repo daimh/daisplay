@@ -18,4 +18,4 @@ fi
 . /etc/daisplay.conf
 cp -pr $DAISPLAY_HOME/usr/lib/daisplay/config/* /home/$SUDO_USER/.config/
 sed -ie "s/DAISPLAY_HOME/$(echo $DAISPLAY_HOME | sed -e "s/\//\\\\\//g")/" /home/$SUDO_USER/.config/pcmanfm/LXDE/desktop-items-0.conf
-echo "Please run 'sudo shutdown -r now' to reboot again"
+echo "Please run 'sudo reboot' to reboot again"

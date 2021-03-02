@@ -25,4 +25,4 @@ pam-service=lightdm-autologin
 xserver-command=X -s 0 dpms -nocursor
 EOF
 fi
-echo "Please run 'sudo shutdown -r now' to reboot"
+echo "Please run 'sudo reboot' to reboot"

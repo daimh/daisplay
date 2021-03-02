@@ -63,7 +63,7 @@ def main():
 			last, stop_route_time = json.load(fjson)
 	except FileNotFoundError as e:
 		pass
-	if now - last >= 40:
+	if now - last >= 10:
 		print('json is too old')
 		try :
 			magicbus_srt = magicbus.get_stop_route_time(magicbus.stops)
