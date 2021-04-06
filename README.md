@@ -6,7 +6,8 @@ A Raspberry Pi OS Lite-based signage.
 It plays multiple h264 videos simutaneously, shows time, weather and bus information, changes background at user-specified interval. It also supports user's own addon. U of Michigan's Magic Bus, AAATA bus, and weather were implemented in addon as an example. 
 
 #### Test history
-- 2021-04-05, Raspberry Pi OS Lite (March 4th 2021), Pi 3 Model B Rev 1.2, 1080p resolution display 
+- 2021-04-06, Raspberry Pi OS Lite (March 4th 2021), Pi 4 Model B Rev 1.1, one 4k resolution TV
+- 2021-04-05, Raspberry Pi OS Lite (March 4th 2021), Pi 3 Model B Rev 1.2, 1080p resolution TV
 - 2021-02-23, Raspberry Pi OS Lite, kernel version 5.10.11-v7l+ on a Pi 4 with one 4k resolution display
 - 2019-09-25, Raspberry Pi 3 Model B at 1080p resolution, and Pi 4 with one 4k resolution display 
 
