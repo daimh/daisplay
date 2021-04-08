@@ -1,31 +1,73 @@
-#!/usr/bin/env bash
+#!/usr/bin/bash
+#20210408 getopt
 #20200102 FIRST LAST
 #20191202 mp4 -> h264
 #20191121
 set -e
-if [ -f slideshow.h264 ]
-then
-	echo "file slideshow.h264 already exists, rename or remove it first!"
-	exit 1
-fi
-LAST="$(ls *.png | tail -n 1)"
-if [[ -h "$LAST" && $LAST == *-png2h264-LAST.png ]]
-then
-	echo "$LAST seems to be a leftover file from previous png2h264 run, rm it please"
-	exit 1
-fi 
-LASTDUP="$(echo $LAST | sed -e "s/\.png/-png2h264-LAST.png/")"
-ln -s "$LAST" "$LASTDUP"
+trap "exit 1" TERM
+export TOP_PGID=$(ps --no-headers -o pgid $$ | tr -d ' ')
+function helpme {
+	if [[ "$1" != "" ]]
+	then
+		echo -e "$1" 1>&2
+	else
+		cat /proc/$$/fd/255 | sed -n '/^#HELPME_START/,/^#HELPME_END/p' | grep -v "^#HELPME_" | grep -e "	-\|^#" | grep -- "$(echo $OPT_SHORT | sed -e "s/://g" | sed -e "s/\(.\)/\t-\1 \\\|/g" | sed -e "s/$/^#$COMMAND\t\\\|^#[A-Z]/" )" | sed -e "s/^#$COMMAND\t/\t/; s/^#//" 1>&2
+	fi
+	kill -s TERM -- -$TOP_PGID
+}
 
+OPT_SHORT="hvo:F:W:H:"
+OPT_LONG="help,verbose,output:,fps:,width:,height:"
+OPTS=$(getopt -o $OPT_SHORT --long $OPT_LONG -n "$(basename $0)" -- "$@")
+FPS=0.2
+WIDTH=1080
+HEIGHT=1080
+eval set -- "$OPTS"
+while :
+do
+	case "$1" in
+#HELPME_START
+#SYNOPSIS:
+#	png2h264 [OPTION]... PNG...
+#EXAMPLE:
+#	png2h264 -v -o output.h264 *.png
+#	png2h264 -v -o output.h264 -F 10 *.png
+		-h | --help)
+			helpme ;;
+		-v | --verbose)	#optional, verbose
+			set -x
+			shift ;;
+		-o | --output)	#output h264 file
+			H264=$2
+			shift 2 ;;
+		-F | --fps)	#frame per second, default 0.2
+			FPS=$2
+			shift 2 ;;
+		-W | --width)	#video width, default 1080
+			let WIDTH=$2
+			shift 2 ;;
+		-H | --height)	#video height, default 1080
+			let HEIGHT=$2
+			shift 2 ;;
+		--)
+			shift 1
+			break ;;
+		*)
+			break ;;
+#HELPME_END
+	esac
+done
 
-FIRST="$(ls *.png | head -n 1)"
-if [[ -h "$FIRSTT" && $FIRSTT == *-png2h264-FIRST.png ]]
-then
-	echo "$FIRST seems to be a leftover file from previous png2h264 run, rm it please"
-	exit 1
-fi 
-FIRSTDUP="$(echo $FIRST | sed -e "s/\.png/-png2h264-FIRST.png/")"
-ln -s "$FIRST" "$FIRSTDUP"
+[ $# -gt 0 ] || helpme "ERR-001: PNG files are missing"
+[ ! -f "$H264" ] || helpme "ERR-002: file $H264 already exists, rename or remove it first!"
+which mencoder &> /dev/null || helpme "ERR-003: install mencoder please"
+PNGS=( "$@" )
+LAST="${PNGS[-1]}"
 
-mencoder mf://*.png -mf w=1080:h=1080:fps=0.3:type=png -ovc x264 -x264encopts preset=medium -o slideshow.h264
-rm "$FIRSTDUP" "$LASTDUP" 
+DUP=$(mktemp --suffix=.png)
+ln -fs "$LAST" "$DUP"
+PNGS+=("$DUP")
+PNGS=$(IFS=, ; echo "${PNGS[*]}")
+echo $PNGS
+mencoder mf://"$PNGS" -mf w=$WIDTH:h=$HEIGHT:fps=$FPS:type=png -ovc x264 -x264encopts preset=medium -o "$H264"
+rm "$DUP"
