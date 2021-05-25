@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-#19500101 initial version daimon:/etc/Model/sh
 import sys
 import argparse
 import json, urllib.request, time
@@ -17,8 +16,8 @@ def get_stop_route_time(my_stops):
 		now = int(time.time())
 		link = f'https://mbus.ltp.umich.edu/bustime/api/v3/getpredictions?locale=en&stpid={stop_id}&top=4&key={magicbus_key.key}&format=json&xtime={now}'
 		prds = json.loads(urllib.request.urlopen(link, timeout=4).read().decode())
-		print(prds)
-		for bus in prds['bustime-response']['prd']:
+		prds = prds['bustime-response']
+		for bus in prds.get('prd', []):
 			waittime = bus['prdctdn']
 			if waittime == 'DUE': continue
 			stop_route_time.setdefault(stop_name, {}).setdefault(bus['rt'], []).append(int(waittime))
