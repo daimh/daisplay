@@ -9,7 +9,8 @@ route_rename = {
 	'4-TO BTC'			: '4-Y2A',
 	'4-TO YTC'			: '4-A2Y',
 	'32-TO MILLER P+R'	: '32',
-	'65-to Green Rd P&R' : '65',
+	'65-to Green Rd P&R' : '65-G',
+	'65-to CCTC' : '65-CCTC',
 	'91-TO CHELSEA'		: '91',
 	'91-TO ANN ARBOR'	: '91',
 	'92-TO CANTON'		: '92',
@@ -82,10 +83,11 @@ def main():
 			time_list = list(set(time_list))
 			route_time[rt] = ','.join([str(i) for i in sorted(time_list)])
 	#
-	crop_spec = tuple([int(s) for s in sys.argv[1].split('-')[1:5]])
-	draw_png(stop_route_time, crop_spec, now - last)
 	for st in sorted(stop_route_time.keys()):
 		print(st)
 		for route_time in sorted(stop_route_time.get(st, {}).items()):
 			print(route_time)
+	if len(sys.argv) > 1 :
+		crop_spec = tuple([int(s) for s in sys.argv[1].split('-')[1:5]])
+		draw_png(stop_route_time, crop_spec, now - last)
 if __name__ == '__main__': main()
